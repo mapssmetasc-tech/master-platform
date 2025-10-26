@@ -1,0 +1,58 @@
+﻿version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: master-platform-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: master-platform-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: master-platform-backend
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/master-platform?authSource=admin
+      - REDIS_HOST=redis
+      - FRONTEND_URL=http://localhost:3000
+    depends_on:
+      - mongodb
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: master-platform-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:4000/api
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:
+  redis_data:
