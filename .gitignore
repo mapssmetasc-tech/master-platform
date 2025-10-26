@@ -1,21 +1,10 @@
-# Dependencies
-node_modules/
-
-# Build
+﻿node_modules/
 dist/
 build/
-
-# Environment
 .env
 .env.local
-
-# IDE
-.vscode/
-.idea/
-
-# OS
 .DS_Store
 Thumbs.db
-
-# Logs
 *.log
+.vscode/
+.idea/
